@@ -1,15 +1,18 @@
 <template>
-  <div>Ready to start</div>
+  <Welcome/>
 </template>
 
 <script>
 
+import Welcome from "@/pages/Welcome";
+
 export default {
   name: 'App',
   components: {
-
+    Welcome
   }
 }
+
 </script>
 
 <style>
