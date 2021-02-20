@@ -8,7 +8,7 @@ body, html, header
     margin: 0;
 }
 
-header {
+header, .on-load {
     width: 100vw;
     height: 100vh;
     background-color: transparent;
@@ -130,4 +130,12 @@ footer
 
 .btn-like-icon {
     margin: 0 !important;
+}
+
+.search-container {
+    padding: 0 !important;
+}
+
+.search-container div {
+    width: 100%;
 }
