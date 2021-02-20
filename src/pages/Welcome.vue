@@ -10,13 +10,13 @@
     </header>
 
     <main class="  ">
-      <div class="ui container raised segment search-container">
+      <div class="ui container raised segment search-container" v-if="errorMessage.length === 0">
         <div class="ui icon input">
-          <input type="text" placeholder="Search by article title..." v-model.trim="searched" v-on:keyup="onSearch" v-on:blur="quiteSearch" v-on:focus="readyForSearch" >
+          <input type="text" placeholder="Search by article title..." v-model.trim="searched" v-on:keyup="onSearch">
           <i class="search link icon"></i>
         </div>
       </div>
-      <div :class="['ui container raised segment', { loading: loadingSearched }]" v-if="articleList.length !== 0">
+      <div :class="['ui container raised segment', { loading: loadingSearched }]" v-if="displayedArticles.length !== 0 && errorMessage.length === 0">
         <Article
             v-for="(item, index) in articles"
             v-bind:item="item"
@@ -26,7 +26,7 @@
           <div class="ui divider" v-if="index !== (articles.length - 1)"></div>
         </Article>
       </div>
-      <div class="ui container raised segment" v-if="articleList.length === 0 && searched.length !== 0">
+      <div class="ui container raised segment" v-if="displayedArticles.length === 0 && searched.length !== 0 && errorMessage.length === 0">
         <div class="ui negative icon message" >
           <i class="frown icon"></i>
           <div class="content">
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-      <div class="ui container raised segment" v-if="articleList.length === 0 && searched.length === 0">
+      <div class="ui container raised segment" v-if="allArticles.length === 0 && searched.length === 0 && errorMessage.length === 0">
         <div class="ui info message" >
           <div class="header">
             Sorry...
@@ -91,7 +91,8 @@ export default {
   data() {
     return {
       logo,
-      articleList : [],
+      allArticles : [],
+      displayedArticles : [],
       searched: "",
       loadingArticles: false,
       loadingSearched: false,
@@ -108,48 +109,51 @@ export default {
             // You can use setTimeout to see effect
             // setTimeout(() => {
               for (const article of res.data.data) {
-                this.articleList.push(article)
+                this.allArticles.push(article)
+              }
+              for (let i=0; i < process.env.VUE_APP_ARTICLES_DISPLAYED ; i++){
+                this.displayedArticles.push(res.data.data[i])
               }
               this.loadingArticles = false
-            // }, 5000)
+            // }, 2000)
           }
           else {
-            this.errorMessage = res.data.status.message
+            this.errorMessage = "Something goes wrong on server side. Please try again later."
+            console.warn(res.data.status.message)
+            this.loadingArticles = false
           }
         })
         .catch((err) => {
-          this.errorMessage = err
+          this.errorMessage = "Something goes wrong. Please try again."
+          console.warn(err)
+          this.loadingArticles = false
         })
   },
 
   computed : {
     articles () {
-      return this.articleList
+      return this.displayedArticles
     },
   },
 
   methods : {
     onSearch(){
       this.loadingSearched = true
+      this.displayedArticles.splice(0)
       if (this.searched.length !== 0)
       {
-        this.articleList = this.$tampon.filter((item) => {
+        this.displayedArticles = this.allArticles.filter((item) => {
           return item.title.toLowerCase().includes(this.searched.toLowerCase())
         })
         this.loadingSearched = false
       }
       else {
-        this.articleList = this.$tampon.filter(() => {
-          return true
-        })
+        for (let i=0; i < process.env.VUE_APP_ARTICLES_DISPLAYED ; i++){
+          this.displayedArticles.push(this.allArticles[i])
+        }
         this.loadingSearched = false
       }
-    },
-    readyForSearch(){
-      this.$tampon = this.articleList.filter(() => {
-        return true
-      })
-    },
+    }
   }
 }
 </script>
