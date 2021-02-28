@@ -14,7 +14,9 @@
     "expressjs": "^1.0.1",
     "luxon": "^1.26.0",
     "postcss-loader": "^5.0.0",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vue-router": "4",
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

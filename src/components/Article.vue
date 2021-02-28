@@ -25,7 +25,7 @@
             {{ item.like}}
           </a>
         </div>
-        <a href="./article.html"><div class="ui basic  button">Lire</div></a>
+        <router-link :to="{ name: 'ViewArticle', params: { slug: item.slug }}"><div class="ui basic  button">Lire</div></router-link>
       </div>
     </div>
     <div class="ui column article-img" v-if="(index % 2) !== 0">
@@ -41,9 +41,10 @@ import * as b from '../module/biblio'
 
 export default {
   name: "Article",
-
-  props: [ 'item', 'index' ],
-
+  props: {
+    item: Object,
+    index: Number
+  },
   data(){
     return {
       url : "http://" + process.env.VUE_APP_SERVER_HOST,
