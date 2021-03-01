@@ -10,13 +10,13 @@
     </header>
 
     <main class="">
-      <div class="ui container raised segment search-container" v-show="errors.length === 0 && displayedArticles.length !== 0">
+      <div class="ui container raised segment search-container" v-show="errorMessage.length === 0 && displayedArticles.length !== 0">
         <div class="ui icon input">
           <input type="text" placeholder="Search by article title..." v-model.trim="searched" v-on:keyup="onSearch">
           <i class="search link icon"></i>
         </div>
       </div>
-      <div class="ui container raised segment" v-if="searching && errors.length === 0">
+      <div class="ui container raised segment" v-if="searching && errorMessage.length === 0">
         <Article
             v-for="(item, index) in findArticles(searched)"
             :item="item"
@@ -35,7 +35,7 @@
           </div>
         </div>
       </div>
-      <div class="ui container raised segment" v-if="!searching && errors.length === 0">
+      <div class="ui container raised segment" v-if="!searching && errorMessage.length === 0">
         <Article
             v-for="(item, index) in displayedArticles"
             :item="item"
@@ -51,14 +51,14 @@
           <p>No article is yet published. Come back a bit later.</p>
         </div>
       </div>
-      <div class="ui container raised segment" v-if="errors.length !== 0">
+      <div class="ui container raised segment" v-if="errorMessage.length !== 0">
         <div class="ui negative icon message">
           <i class="frown icon"></i>
           <div class="content">
             <div class="header">
               Errors
             </div>
-            <p>{{ errors }}</p>
+            <p>{{ errorMessage }}</p>
           </div>
         </div>
       </div>
@@ -81,39 +81,47 @@
 
 import logo from "../assets/avô.png"
 import Article from "@/components/Article";
-import { mapActions, mapGetters } from "vuex";
+import {useStore} from "vuex";
+import {ref} from "vue";
+import {computed} from "@vue/reactivity";
 
 export default {
   name: "Home",
   components: { Article },
+
   data() {
     return {
       logo,
       searched: "",
-      loadingArticles: false,
       searching: false,
     }
   },
 
-  created() {
-    this.loadingArticles = true
-    this.loadArticles().then(() => {
-      this.loadingArticles = false
+
+  setup() {
+
+    const store = useStore()
+
+    let displayedArticles = computed(() => store.getters.displayedArticles)
+    let findArticles = computed(() => store.getters.findArticles)
+    let errorMessage = computed(() => store.getters.getError)
+
+    let loadingArticles = ref(true)
+    store.dispatch('getArticles').then(() => {
+      loadingArticles.value = false
     })
+
+    return {
+      displayedArticles,
+      findArticles,
+      errorMessage,
+      loadingArticles
+    }
+
   },
 
-  computed : {
-    ...mapGetters([
-      'displayedArticles',
-      'findArticles',
-      'errors'
-    ])
-  },
 
   methods : {
-    ...mapActions({
-      loadArticles : 'getArticles',
-    }),
     onSearch(){
       this.searching = this.searched.length !== 0;
     }

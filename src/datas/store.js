@@ -1,16 +1,12 @@
 import { createStore } from 'vuex'
-import mutations from "@/datas/mutations";
-import actions from "@/datas/actions";
-import getters from "@/datas/getters";
+import oneArticle from '@/datas/modules/oneArticle/index';
+import allArticle from '@/datas/modules/allArticles/index';
+
 
 export default createStore({
-    state () {
-        return {
-            articles: [],
-            error: ""
-        }
+    modules : {
+        oneArticle,
+        allArticle
     },
-    getters: getters,
-    mutations: mutations,
-    actions: actions,
+    strict: true
 })

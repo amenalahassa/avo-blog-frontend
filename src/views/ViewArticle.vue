@@ -3,9 +3,12 @@
 </template>
 
 <script>
-export default {
-  name: "ViewArticle"
+// import {useStore} from "vuex";
 
+export default {
+  name: "ViewArticle",
+  setup() {
+  }
 }
 </script>
 
