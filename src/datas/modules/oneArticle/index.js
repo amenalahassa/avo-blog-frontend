@@ -4,6 +4,10 @@ import mutations from "@/datas/modules/oneArticle/mutations";
 
 export default {
     namespace: true,
+    state: () => ({
+        content : null,
+        about: null
+    }),
     actions,
     getters,
     mutations

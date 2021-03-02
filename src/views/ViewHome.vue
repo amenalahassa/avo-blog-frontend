@@ -130,13 +130,7 @@ export default {
 
 </script>
 
-<style >
-
-body, html, header
-{
-  padding: 0;
-  margin: 0;
-}
+<style  scoped>
 
 header, .on-load {
   width: 100vw;
@@ -150,13 +144,6 @@ header, .on-load {
   color: white;
   font-size: larger;
   font-family: 'Comfortaa', cursive;
-}
-
-body
-{
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-image: linear-gradient(45deg, #e37682 15%, #5f4d93 85%);
 }
 
 
@@ -181,43 +168,10 @@ main
   margin: 10px;
 }
 
-.article-section
-{
-  padding: 30px !important;
-}
-
-.article-list
-{
-  padding: 20px;
-}
-
-
-.article-desc
-{
-  margin-bottom: 20px;
-}
-
-.article-img
-{
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  padding: 20px !important;
-}
-
 /* Define image heigth in your project to 300px */
 .article-img img
 {
   max-height: 300px !important;
-}
-
-.article-presentation
-{
-  padding: 40px !important;
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
 }
 
 .article-presentation h3
@@ -253,14 +207,6 @@ footer
 
 }
 
-.btn-like {
-  padding-left: 1em !important;
-  padding-right: 1em !important;
-}
-
-.btn-like-icon {
-  margin: 0 !important;
-}
 
 .search-container {
   padding: 0 !important;
