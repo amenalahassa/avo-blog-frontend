@@ -9,6 +9,13 @@ export function formatDateInLocal(date){
     return date.setLocale('fr').toLocaleString(f)
 }
 
+export function formatDateTimeInLocal(date){
+    date = DateTime.fromISO(date)
+    let f = {month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'};
+    return date.setLocale('fr').toLocaleString(f)
+}
+
+
 export function initAccordion()
 {
     $('.ui.accordion').accordion();

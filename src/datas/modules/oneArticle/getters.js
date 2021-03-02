@@ -10,6 +10,14 @@ export default {
         return state.about.title
     },
 
+    getSlug: (state) => {
+        return state.about.slug
+    },
+
+    getArticleId: (state) => {
+        return state.about._id
+    },
+
     getAuthor: (state) => {
         return state.about.author
     },
@@ -29,6 +37,10 @@ export default {
         return state.content.comments.length
     },
 
+    getComments: (state) => {
+        return state.content.comments
+    },
+
     getLikes: (state) => {
         return state.about.like
     },
@@ -40,6 +52,8 @@ export default {
     getContent: (state) => {
         return state.content.section
     },
+
+
 
 
 

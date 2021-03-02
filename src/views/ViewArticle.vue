@@ -148,88 +148,13 @@
                     </div>
                   </div>
                   <div class="content ">
-                    <div class="ui container threaded minimal comments">
-                      <div class="comment">
-                        <a class="avatar">
-                          <img src="https://eu.ui-avatars.com/api/?name=John+Doe">
-                        </a>
-                        <div class="content">
-                          <a class="author">Matt</a>
-                          <div class="metadata">
-                            <span class="date">Today at 5:42PM</span>
-                          </div>
-                          <div class="text">
-                            How artistic!
-                          </div>
-                          <div class="actions">
-                            <a class="reply">Reply</a>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="comment">
-                        <a class="avatar">
-                          <img src="https://eu.ui-avatars.com/api/?name=John+Doe">
-                        </a>
-                        <div class="content">
-                          <a class="author">Elliot Fu</a>
-                          <div class="metadata">
-                            <span class="date">Yesterday at 12:30AM</span>
-                          </div>
-                          <div class="text">
-                            <p>This has been very useful for my research. Thanks as well!</p>
-                          </div>
-                          <div class="actions">
-                            <a class="reply">Reply</a>
-                          </div>
-                        </div>
-                        <div class="comments">
-                          <div class="comment">
-                            <a class="avatar">
-                              <img src="https://eu.ui-avatars.com/api/?name=John+Doe">
-                            </a>
-                            <div class="content">
-                              <a class="author">Jenny Hess</a>
-                              <div class="metadata">
-                                <span class="date">Just now</span>
-                              </div>
-                              <div class="text">
-                                Elliot you are always so right :)
-                              </div>
-                              <div class="actions">
-                                <a class="reply">Reply</a>
-                              </div>
-                              <form class="ui reply form">
-                                <div class="field">
-                                  <textarea></textarea>
-                                </div>
-                                <div class="ui primary submit labeled icon button">
-                                  <i class="icon edit"></i> Add Reply
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="comment">
-                        <a class="avatar ui large rounded image">
-                          <img  src="https://eu.ui-avatars.com/api/?name=John+Doe">
-                        </a>
-                        <div class="content">
-                          <a class="author">Joe Henderson</a>
-                          <div class="metadata">
-                            <span class="date">5 days ago</span>
-                          </div>
-                          <div class="text">
-                            Dude, this is awesome. Thanks so much
-                          </div>
-                          <div class="actions">
-                            <a class="reply">Reply</a>
-                          </div>
-                        </div>
-                      </div>
-
+                    <div class="ui container small comments">
+                      <Comment
+                      v-for="comment in comments"
+                      :key="comment"
+                      :id="comment"
+                      />
                     </div>
-
                   </div>
                 </div>
                 <div class="title active ">
@@ -239,12 +164,15 @@
                 <div class="content active ">
                   <form class="ui reply form">
                     <div class="field">
-                      <textarea v-model="message"></textarea>
+                      <textarea v-model="message" v-on:focus="commentingMessage = '' "></textarea>
                     </div>
-                    <div class="ui green labeled submit icon button" @click="sendComment"  :class="{disabled : message.length === 0}">
+                    <div class="ui green labeled submit icon button" @click="makeComment"  :class="{disabled : message.length === 0}">
                       <i class="icon send" ></i> Comment
                     </div>
                   </form>
+                  <div class="ui icon message" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
+                    <p>{{ commentingMessage }}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -277,21 +205,25 @@ import {useStore} from "vuex";
 import {ref} from "vue";
 import logo from "@/assets/avô2.png";
 import {computed} from "@vue/reactivity";
-import {initAccordion, showModal} from "@/module/biblio";
+import {initAccordion} from "@/module/biblio";
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
+import Comment from "@/components/Comment";
+import { commentMixin } from "@/module/mixins";
+import store from "@/datas/store";
 
 export default {
   name: "ViewArticle",
-  props : [ 'slug'],
+  props : [ 'slug' ],
+  mixins: [ commentMixin ],
   components: {
     Login,
-    Signup
+    Signup,
+    Comment
   },
   data() {
     return {
       logo,
-      message: "",
       currentTab: 'signup',
     }
   },
@@ -314,21 +246,39 @@ export default {
       like: computed(() => store.getters.getLikes),
       tags: computed(() => store.getters.getTags),
       content: computed(() => store.getters.getContent),
+      comments: computed(() => store.getters.getComments),
     }
-
+  },
+  watch:{
+    commentingMessage(val){
+      if (val.length > 0)
+      {
+        setTimeout(() => {
+          this.commentingMessage = ""
+        }, 2000)
+      }
+    }
   },
   methods: {
     getImage(link){
       let baseURL = "http://" + process.env.VUE_APP_SERVER_HOST
       return baseURL + link
     },
-    sendComment() {
-      console.log(this.message)
-      showModal()
+    makeComment() {
+      store.dispatch('makeComment', this.message).then((response) => {
+        let status = response.data.status
+        this.commentingResult = status.success
+        this.commentingMessage = status.message
+        this.message = ""
+        store.dispatch('getArticle', this.$props.slug)
+      }).catch((error) => {
+        this.commentingResult = false
+        this.commentingMessage = "Comment sending failed. Details: " + error
+      })
     },
     displayComponent(component){
       this.currentTab = component
-    }
+    },
   },
   updated() {
     initAccordion()

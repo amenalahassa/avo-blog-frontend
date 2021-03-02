@@ -6,7 +6,7 @@ import allArticle from '@/datas/modules/allArticles/index';
 export default createStore({
     modules : {
         oneArticle,
-        allArticle
+        allArticle,
     },
     strict: true
 })
