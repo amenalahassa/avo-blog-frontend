@@ -14,6 +14,13 @@ export default {
         })
     },
 
+    //eslint-disable-next-line
+    login : ({commit}, {email, password}) => {
+        return instance.post('/login', {
+            email, password
+        })
+    },
+
     logout : ({rootGetters}) => {
         instance.defaults.headers.common['Authorization'] = "Bearer " + rootGetters.getUserToken;
         return instance.post('/logout', {

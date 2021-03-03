@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import {checkFormValidation, hideConnectionModal, initFormValidation, resetConnectionForm} from "@/module/biblio";
+import {checkFormValidation, hideModal, initFormValidation, resetConnectionForm} from "@/module/biblio";
 import store from "@/datas/store";
 
 export default {
@@ -93,7 +93,7 @@ export default {
       this.confPwd = ""
       this.error = ""
       this.connected = false
-      hideConnectionModal()
+      hideModal('connection')
       resetConnectionForm('signup')
     }
   }

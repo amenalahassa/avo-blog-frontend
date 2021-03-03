@@ -10,13 +10,13 @@
             <span class="user-name">{{ userName }}</span>
           </a>
           <a class="ui item" >
-            <button class="ui white button" @click="disconnect" v-if="userToken.length !== 0">
+            <button class="ui white button" @click="showModal('disconnection')" v-if="userToken.length !== 0">
               Logout
             </button>
-            <button class="ui white button" @click="showConnectionModal(); currentTab='signup'" v-if="userToken.length === 0">
+            <button class="ui white button btn-signup" @click="showModal('connection'); currentTab='signup'" v-if="userToken.length === 0">
               Sign up
             </button>
-            <button class="ui white button" @click="showConnectionModal(); currentTab='login'" v-if="userToken.length === 0">
+            <button class="ui white button" @click="showModal('connection'); currentTab='login'" v-if="userToken.length === 0">
               Login
             </button>
           </a>
@@ -197,6 +197,25 @@
       </keep-alive>
     </div>
 
+    <div :class="['ui modal disconnection']">
+      <div class="content">
+        <div class="ui right aligned container actions">
+          <i class="icon close cancel button "  @click="hideModal('disconnection')"></i>
+        </div>
+        <div class="ui icon message">
+          <div class=" ui container ">
+            <p>Are you sure to logout ?</p>
+          </div>
+          <div class="ui icon negative message" v-if="errorLogout.length !== 0">
+            <p>{{errorLogout}}</p>
+          </div>
+          <div class=" ui right aligned container ">
+            <button class="ui cancel button red" @click="disconnect" >Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div class="ui segment on-load" v-if="loadingArticles">
     <p></p>
@@ -211,7 +230,7 @@ import {useStore} from "vuex";
 import {ref, onMounted, onUpdated} from "vue";
 import logo from "@/assets/avô2.png";
 import {computed} from "@vue/reactivity";
-import {getUserFromLocal, initAccordion, showConnectionModal} from "@/module/biblio";
+import {getUserFromLocal, initAccordion, showModal, hideModal} from "@/module/biblio";
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
 import Comment from "@/components/Comment";
@@ -231,6 +250,7 @@ export default {
     return {
       logo,
       currentTab: 'login',
+      errorLogout: ""
     }
   },
   setup(props) {
@@ -301,7 +321,7 @@ export default {
       let token = getUserFromLocal()
       if (token === null)
       {
-        showConnectionModal()
+        showModal('connection')
       }
       else {
         this.sendComment()
@@ -313,13 +333,20 @@ export default {
     disconnect(){
       store.dispatch('logout').then((response) => {
         let status = response.data.status
-        store.commit('DISCONNECT_USER')
-        console.log(status.message)
+        if (status.success)
+        {
+          store.commit('DISCONNECT_USER')
+          hideModal('disconnection')
+        }
+        else {
+          this.errorLogout = status.message
+        }
       }).catch((error) => {
-        console.log(error)
+        this.errorLogout = "Logout failed. Details : " + error
       })
     },
-    showConnectionModal
+    showModal,
+    hideModal
   }
 }
 </script>
@@ -476,6 +503,10 @@ footer
   margin-top: 5px;
   margin-bottom: 30px;
   font-size: 0.1em !important;
+}
+
+.btn-signup {
+  margin-right: 20px !important;
 }
 
 </style>

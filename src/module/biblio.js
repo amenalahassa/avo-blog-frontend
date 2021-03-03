@@ -15,27 +15,40 @@ export function formatDateTimeInLocal(date){
     return date.setLocale('fr').toLocaleString(f)
 }
 
-
 export function initAccordion()
 {
     $('.ui.accordion').accordion();
 }
 
-export function showConnectionModal()
+export function showModal(type)
 {
-    $('.ui.modal.connection').modal('show');
+    if (type === 'disconnection')
+    {
+        $('.ui.modal.disconnection').modal('show');
+    }
+    else {
+        $('.ui.modal.connection').modal('show');
+
+    }
 }
 
-export function hideConnectionModal()
+export function hideModal(type)
 {
-    $('.ui.modal.connection').modal('hide');
+    if (type === 'disconnection')
+    {
+        $('.ui.modal.disconnection').modal('hide');
+    }
+    else {
+        $('.ui.modal.connection').modal('hide');
+
+    }
 }
 
 export function initFormValidation(type) {
-    if (type === 'signup'){
-        //eslint-disable-next-line
-        const rule = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    //eslint-disable-next-line
+    const rule = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
+    if (type === 'signup'){
         $('.ui.form.signup').form({
             fields: {
                 name: {
@@ -86,6 +99,38 @@ export function initFormValidation(type) {
                         }
                     ]
                 },
+            }
+        })
+    }
+    else {
+        $('.ui.form.login').form({
+            fields: {
+                email: {
+                    identifier: 'email',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Please enter your email'
+                        },
+                        {
+                            type: 'regExp',
+                            value: rule,
+                            prompt : 'Please a valid email'
+                        }]
+                },
+                password: {
+                    identifier: 'password',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Please enter a password'
+                        },
+                        {
+                            type   : 'minLength[8]',
+                            prompt : 'Your password must be at least {ruleValue} characters'
+                        }
+                    ]
+                }
             }
         })
     }
