@@ -14,4 +14,11 @@ export default {
         })
     },
 
+    logout : ({rootGetters}) => {
+        instance.defaults.headers.common['Authorization'] = "Bearer " + rootGetters.getUserToken;
+        return instance.post('/logout', {
+            id: rootGetters.getUserId
+        })
+    },
+
 }

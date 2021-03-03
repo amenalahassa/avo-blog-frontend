@@ -10,7 +10,7 @@
             <span class="user-name">{{ userName }}</span>
           </a>
           <a class="ui item" >
-            <button class="ui white button" v-if="userToken.length !== 0">
+            <button class="ui white button" @click="disconnect" v-if="userToken.length !== 0">
               Logout
             </button>
             <button class="ui white button" @click="showConnectionModal(); currentTab='signup'" v-if="userToken.length === 0">
@@ -309,6 +309,15 @@ export default {
     },
     displayComponent(component){
       this.currentTab = component
+    },
+    disconnect(){
+      store.dispatch('logout').then((response) => {
+        let status = response.data.status
+        store.commit('DISCONNECT_USER')
+        console.log(status.message)
+      }).catch((error) => {
+        console.log(error)
+      })
     },
     showConnectionModal
   }
