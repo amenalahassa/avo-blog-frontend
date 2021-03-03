@@ -23,13 +23,13 @@
           <p>Don't have an account ? <span class="text-button-connect " @click="$emit('connect', 'signup')">Sign up</span></p>
         </div>
         <div class="ui error message"></div>
-        <div class="ui icon message" v-if="error.length !== 0" >
+        <div class="ui icon message small" v-if="error.length !== 0" >
           <p>{{ error }}</p>
         </div>
       </form>
     </div>
   </div>
-  <div class="ui icon message" v-if="connected" >
+  <div class="ui icon message " v-if="connected" >
     <div class=" ui container ">
       <p>Great ! Your connected.</p>
     </div>

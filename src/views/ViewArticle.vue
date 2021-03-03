@@ -120,14 +120,17 @@
                   </button>
                 </div>
                 <div class=" column likes ui right aligned ">
-                  <div class="ui  left mini  labeled button" tabindex="0">
-                    <a class="ui basic mini right pointing label">
+                  <div class="ui left mini labeled button"  tabindex="0">
+                    <a class="ui basic mini right pointing label" :class="{purple : liked}">
                       {{like}}
                     </a>
-                    <div class="ui mini button ">
+                    <div class="ui mini button " @click="makelike(!liked)" :class="{purple : liked}">
                       <i class="heart icon"></i> Like
                     </div>
                   </div>
+                </div>
+                <div class="ui negative message tiny container message-like-error" v-if="errorLike.length !== 0">
+                  <p>{{errorLike}}</p>
                 </div>
               </div>
             </div>
@@ -176,7 +179,7 @@
                       <i class="icon send" ></i> Comment
                     </div>
                   </form>
-                  <div class="ui icon message" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
+                  <div class="ui icon message tiny" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
                     <p>{{ commentingMessage }}</p>
                   </div>
                 </div>
@@ -250,7 +253,8 @@ export default {
     return {
       logo,
       currentTab: 'login',
-      errorLogout: ""
+      errorLogout: "",
+      errorLike: "",
     }
   },
   setup(props) {
@@ -288,6 +292,7 @@ export default {
       comments: computed(() => store.getters.getComments),
       userName: computed(() => store.getters.getUserName),
       userToken: computed(() => store.getters.getUserToken),
+      liked: computed(() => store.getters.isLiked),
     }
   },
   watch:{
@@ -325,6 +330,51 @@ export default {
       }
       else {
         this.sendComment()
+      }
+    },
+    makelike(act) {
+      let token = getUserFromLocal()
+      if (token === null)
+      {
+        this.currentTab = 'login'
+        showModal('connection')
+      }
+      else {
+        if (act) {
+          store.dispatch('like').then((response) => {
+            let status = response.data.status
+            if (status.success){
+              store.dispatch('getArticle', this.$props.slug)
+            }
+            else {
+              this.errorLike = status.message
+            }
+          }).catch((error) => {
+            this.errorLike = "Like article failed. Details :" + error
+          }).then(() => {
+            setTimeout(() => {
+              this.errorLike = ""
+            }, 3000)
+          })
+        }
+        else {
+          store.dispatch('unlike').then((response) => {
+            let status = response.data.status
+            if (status.success){
+              store.dispatch('getArticle', this.$props.slug)
+            }
+            else {
+              this.errorLike = status.message
+            }
+          }).catch((error) => {
+            this.errorLike = "Unlike article failed. Details :" + error
+          }).then(() => {
+            setTimeout(() => {
+              this.errorLike = ""
+            }, 3000)
+          })
+
+        }
       }
     },
     displayComponent(component){
@@ -487,6 +537,8 @@ footer
   font-size: 2.8em !important;
   margin-bottom: 100px;
   color: white;
+  margin-left: 20px !important;
+  margin-right: 20px !important;
 }
 
 .btn-next a {
@@ -507,6 +559,10 @@ footer
 
 .btn-signup {
   margin-right: 20px !important;
+}
+
+.message-like-error {
+  margin: 0 10px 10px 10px !important;
 }
 
 </style>

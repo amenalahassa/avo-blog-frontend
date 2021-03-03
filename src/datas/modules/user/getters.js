@@ -11,7 +11,7 @@ export default {
 
     getUserId (state) {
         return state.id
-    }
+    },
 
 
 

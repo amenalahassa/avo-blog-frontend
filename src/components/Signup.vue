@@ -31,7 +31,7 @@
           <p>Already have an account ? <span class="text-button-connect" @click="$emit('connect', 'login')">Sign in</span> </p>
         </div>
         <div class="ui error message"></div>
-        <div class="ui icon message" v-if="error.length !== 0" >
+        <div class="ui icon message small" v-if="error.length !== 0" >
           <p>{{ error }}</p>
         </div>
       </form>

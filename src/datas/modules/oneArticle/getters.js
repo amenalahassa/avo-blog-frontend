@@ -42,19 +42,19 @@ export default {
     },
 
     getLikes: (state) => {
-        return state.about.like
+        return state.about.like.length
     },
 
     getTags: (state) => {
-        return state.content.tags
+        return state.about.tags
     },
 
     getContent: (state) => {
         return state.content.section
     },
 
-
-
-
+    isLiked: (state, rootGetters) => {
+        return  state.about.like.includes(rootGetters.getUserId)
+    }
 
 }

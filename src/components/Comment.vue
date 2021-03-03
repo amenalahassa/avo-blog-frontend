@@ -22,7 +22,7 @@
               <i class="icon edit"></i> Add Reply
             </div>
           </form>
-          <div class="ui icon message" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
+          <div class="ui icon message mini" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
             <p>{{ commentingMessage }}</p>
           </div>
           <div class="comments" v-if="comment.value.reply.length !== 0">
@@ -33,7 +33,7 @@
             />
           </div>
       </div>
-      <div class="ui negative icon message" v-if="error.length !== 0">
+      <div class="ui negative icon message mini" v-if="error.length !== 0">
         <p>{{ error }}</p>
       </div>
     </div>

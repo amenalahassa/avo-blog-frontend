@@ -42,9 +42,24 @@ export default {
             message
         })
     },
+
     //eslint-disable-next-line
     getComment: ({commit}, id) => {
         return instance.get('/comment/' + id)
+    },
+
+    like: ({rootGetters}) => {
+        instance.defaults.headers.common['Authorization'] = "Bearer " + rootGetters.getUserToken;
+        return instance.post('/article/' + rootGetters.getArticleId + '/like' , {
+            id : rootGetters.getUserId,
+        })
+    },
+
+    unlike: ({rootGetters}) => {
+        instance.defaults.headers.common['Authorization'] = "Bearer " + rootGetters.getUserToken;
+        return instance.post('/article/' + rootGetters.getArticleId + '/unlike' , {
+            id : rootGetters.getUserId,
+        })
     }
 
 
