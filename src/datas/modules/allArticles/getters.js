@@ -18,4 +18,8 @@ export default {
         return state.error
     },
 
+    getAll: (state) => {
+        return state.all
+    }
+
 }

@@ -22,10 +22,10 @@
             <i class="heart icon btn-like-icon"></i>
           </div>
           <a class="ui basic label">
-            {{ item.like}}
+            {{ item.like.length }}
           </a>
         </div>
-        <router-link :to="{ name: 'ViewArticle', params: { slug: item.slug }}"><div class="ui basic  button">Lire</div></router-link>
+        <router-link :to="{ name: 'ViewArticle', params: { slug: item.slug }}"><div class="ui basic  button">Read</div></router-link>
       </div>
     </div>
     <div class="ui column article-img" v-if="(index % 2) !== 0">

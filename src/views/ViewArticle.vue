@@ -31,10 +31,10 @@
     </header>
 
     <main class=" ui container font-comfortia">
-      <div class="ui two column grid">
+      <div class="ui two column grid" >
         <section class="ui row stackable mobile vertically reversed grid ">
-          <aside class="ui four wide computer column recommanded-aside">
-            <div class="ui segment raised secondary ">
+          <aside class="ui four wide computer column recommanded-aside" v-if="similars.length !== 0" >
+            <div class="ui segment raised secondary " >
               <h4 class="ui header recommanded-header">
                 <div class="content font-assitant">
                   You may like
@@ -42,42 +42,18 @@
                 </div>
               </h4>
               <div>
-                <div class="recommanded-item">
-
-                  <div class=" ui teal">
-                    <a href="./index.html">Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Quod quibusdam adipisci alias assumenda
-                      inventore repellendus neque nihil
-                    </a>
+                <div class="recommanded-item" v-for="(similar, index) in similars" :key="similar.slug">
+                  <div class=" ui teal" >
+                    <router-link :to="{ name: 'ViewArticle', params: { slug: similar.slug }}">
+                      {{ similar.title }}
+                    </router-link>
                   </div>
-
-                </div>
-                <div class="ui divider"></div>
-                <div class="recommanded-item">
-
-                  <div class=" ui teal">
-                    <a href="./index.html">Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Quod quibusdam adipisci alias assumenda
-                      inventore repellendus neque nihil
-                    </a>
-                  </div>
-
-                </div>
-                <div class="ui divider"></div>
-                <div class="recommanded-item">
-
-                  <div class=" ui teal">
-                    <a href="./index.html">Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Quod quibusdam adipisci alias assumenda
-                      inventore repellendus neque nihil
-                    </a>
-                  </div>
-
+                  <div class="ui divider" v-if="index !== (similars.length - 1)"></div>
                 </div>
               </div>
             </div>
           </aside>
-          <article class="ui twelve wide column" id="article">
+          <article class="ui column" :class="{'twelve wide' : similars.length !== 0, 'sixteen wide' : similars.length === 0 }" id="article">
             <div class="ui segment raised article-section tall stacked">
               <div class="article-title">
                 <div class="ui feed">
@@ -265,6 +241,12 @@ export default {
       loadingArticles.value = false
     })
 
+    // onBeforeRouteUpdate(() => {
+    //   const loadingArticles = ref(true)
+    //   store.dispatch('getArticle', props.slug).then(() => {
+    //     loadingArticles.value = false
+    //   })
+    // })
 
     onMounted(() => {
       let user = getUserFromLocal()
@@ -293,6 +275,7 @@ export default {
       userName: computed(() => store.getters.getUserName),
       userToken: computed(() => store.getters.getUserToken),
       liked: computed(() => store.getters.isLiked),
+      similars: computed(() => store.getters.similarArticle),
     }
   },
   watch:{
@@ -397,6 +380,20 @@ export default {
     },
     showModal,
     hideModal
+  },
+  created() {
+    // watch the params of the route to fetch the data again
+    this.$watch(
+        () => this.$route.params,
+        () => {
+          if (this.$route.params.slug !== undefined) {
+            store.dispatch('getArticle', this.$route.params.slug)
+          }
+        },
+        // fetch the data when the view is created and the data is
+        // already being observed
+        { immediate: true }
+    )
   }
 }
 </script>

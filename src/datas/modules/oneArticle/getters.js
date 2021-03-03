@@ -55,6 +55,25 @@ export default {
 
     isLiked: (state, rootGetters) => {
         return  state.about.like.includes(rootGetters.getUserId)
+    },
+
+    similarArticle: (state, rootGetters) => {
+        let similar = []
+        let all = rootGetters.getAll
+        let tags = state.about.tags
+        for (const article of all) {
+            if (article.tags.some(item => tags.includes(item)) )
+            {
+                // if (rootGetters.getTitle !== article.title)
+                // {
+                //     similar.push({title: article.title, slug: article.slug })
+                // }
+                    similar.push({title: article.title, slug: article.slug })
+
+            }
+        }
+        similar = similar.slice(0, 3)
+        return similar
     }
 
 }
