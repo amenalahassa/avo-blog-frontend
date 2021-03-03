@@ -18,7 +18,7 @@
             <div class="field">
               <textarea v-model="message" v-on:focus="commentingMessage = '' " placeholder="your comment"></textarea>
             </div>
-            <div class="ui primary submit labeled icon button" @click="reply">
+            <div class="ui primary submit labeled icon button" :class="{disabled : message.length === 0}" @click="reply">
               <i class="icon edit"></i> Add Reply
             </div>
           </form>
@@ -127,7 +127,6 @@ export default {
 
   computed: {
     commentReplys() {
-      console.log(this.comment.value.reply)
       return this.comment.value.reply
     },
   },
@@ -141,12 +140,13 @@ export default {
         if (oldReply !== newReply) {
           this.comment.value =  data.data
         }
+
       }
       else {
-        this.error.value = data.status.message
+        this.error = data.status.message
       }
     }).catch((err) => {
-      this.error.value = "Something goes wrong when loading article. Details : " + err
+      this.error  = "Something goes wrong when loading article. Details : " + err
     })
   }
 }

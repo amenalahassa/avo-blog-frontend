@@ -24,24 +24,26 @@ export default {
             })
     },
 
-    makeComment: ({getters}, message) => {
+    makeComment: ({getters, rootGetters}, message) => {
+        console.log(rootGetters.getUserId)
+        instance.defaults.headers.common['Authorization'] = "Bearer " + rootGetters.getUserToken;
         return instance.post('/comment', {
             article : getters.getArticleId,
-            user : '602bc9e154acff5cd190d9c1',
+            user : rootGetters.getUserId,
             message
         })
     },
 
     replyComment: ({rootGetters}, {message, commentId}) => {
+        instance.defaults.headers.common['Authorization'] = "Bearer " + rootGetters.getUserToken;
         return instance.post('/comment/reply/' + commentId, {
             article : rootGetters.getArticleId,
-            user : '602bc9e154acff5cd190d9c1',
+            user : rootGetters.getUserId,
             message
         })
     },
-
+    //eslint-disable-next-line
     getComment: ({commit}, id) => {
-        console.log(commit)
         return instance.get('/comment/' + id)
     }
 

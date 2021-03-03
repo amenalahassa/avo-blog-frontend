@@ -6,12 +6,18 @@
           <router-link :to="{ name: 'Home'}" class="logo-link"><img class="logo" :src="logo" alt="Logo de Avo"></router-link>
         </div>
         <div class="right menu">
-          <a class=" item">
-            <span class="user-name">Amen Le geek.</span>
+          <a class=" item" v-if="userName.length !== 0">
+            <span class="user-name">{{ userName }}</span>
           </a>
-          <a class="ui item">
-            <button class="ui white button">
+          <a class="ui item" >
+            <button class="ui white button" v-if="userToken.length !== 0">
               Logout
+            </button>
+            <button class="ui white button" @click="showConnectionModal(); currentTab='signup'" v-if="userToken.length === 0">
+              Sign up
+            </button>
+            <button class="ui white button" @click="showConnectionModal(); currentTab='login'" v-if="userToken.length === 0">
+              Login
             </button>
           </a>
         </div>
@@ -185,7 +191,7 @@
       <span class=" font-pacifico">Made by Amen Alahassa.</span> <span class=" font-comfortia">Web Mobile Developer.</span>
     </footer>
 
-    <div :class="['ui modal']">
+    <div :class="['ui modal connection']">
       <keep-alive>
         <component :is="currentTab" @connect ="displayComponent"></component>
       </keep-alive>
@@ -202,10 +208,10 @@
 
 <script>
 import {useStore} from "vuex";
-import {ref} from "vue";
+import {ref, onMounted, onUpdated} from "vue";
 import logo from "@/assets/avô2.png";
 import {computed} from "@vue/reactivity";
-import {initAccordion} from "@/module/biblio";
+import {getUserFromLocal, initAccordion, showConnectionModal} from "@/module/biblio";
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
 import Comment from "@/components/Comment";
@@ -224,7 +230,7 @@ export default {
   data() {
     return {
       logo,
-      currentTab: 'signup',
+      currentTab: 'login',
     }
   },
   setup(props) {
@@ -233,6 +239,19 @@ export default {
     const loadingArticles = ref(true)
     store.dispatch('getArticle', props.slug).then(() => {
       loadingArticles.value = false
+    })
+
+
+    onMounted(() => {
+      let user = getUserFromLocal()
+      if (user !== null)
+      {
+        store.commit('SET_USER', user)
+      }
+    })
+
+    onUpdated(() => {
+      initAccordion()
     })
 
     return {
@@ -247,6 +266,8 @@ export default {
       tags: computed(() => store.getters.getTags),
       content: computed(() => store.getters.getContent),
       comments: computed(() => store.getters.getComments),
+      userName: computed(() => store.getters.getUserName),
+      userToken: computed(() => store.getters.getUserToken),
     }
   },
   watch:{
@@ -264,7 +285,7 @@ export default {
       let baseURL = "http://" + process.env.VUE_APP_SERVER_HOST
       return baseURL + link
     },
-    makeComment() {
+    sendComment() {
       store.dispatch('makeComment', this.message).then((response) => {
         let status = response.data.status
         this.commentingResult = status.success
@@ -276,12 +297,20 @@ export default {
         this.commentingMessage = "Comment sending failed. Details: " + error
       })
     },
+    makeComment() {
+      let token = getUserFromLocal()
+      if (token === null)
+      {
+        showConnectionModal()
+      }
+      else {
+        this.sendComment()
+      }
+    },
     displayComponent(component){
       this.currentTab = component
     },
-  },
-  updated() {
-    initAccordion()
+    showConnectionModal
   }
 }
 </script>
