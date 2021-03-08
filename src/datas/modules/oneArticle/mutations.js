@@ -7,6 +7,10 @@ export default {
 
     SET_ABOUT (state, about) {
         state.about = about
-    }
+    },
+
+    SET_ERROR (state, message) {
+        state.error = message
+    },
 
 }

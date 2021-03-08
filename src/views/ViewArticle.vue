@@ -1,210 +1,236 @@
 <template>
-  <div v-if="!loadingArticles">
-    <header :style="{backgroundImage: `url('${image}')`}">
-      <div class=" tabs ui secondary menu">
-        <div class="item">
-          <router-link :to="{ name: 'Home'}" class="logo-link"><img class="logo" :src="logo" alt="Logo de Avo"></router-link>
+  <div  >
+    <div v-if="!loadingArticles">
+      <header :style="{backgroundImage: `url('${image}')`}">
+        <div class=" tabs ui secondary stackable menu">
+          <div class="item">
+            <router-link :to="{ name: 'Home'}" class="logo-link"><img class="logo" :src="logo" alt="Logo de Avo"></router-link>
+          </div>
+          <div class="right menu">
+            <a class=" item" v-if="userName.length !== 0">
+              <span class="user-name">{{ userName }}</span>
+            </a>
+            <a class="ui item" >
+              <button class="ui white button" @click="showModal('disconnection')" v-if="userToken.length !== 0">
+                Logout
+              </button>
+              <button class="ui white button btn-signup" @click="showModal('connection'); currentTab='signup'" v-if="userToken.length === 0">
+                Sign up
+              </button>
+              <button class="ui white button" @click="showModal('connection'); currentTab='login'" v-if="userToken.length === 0">
+                Login
+              </button>
+            </a>
+          </div>
         </div>
-        <div class="right menu">
-          <a class=" item" v-if="userName.length !== 0">
-            <span class="user-name">{{ userName }}</span>
-          </a>
-          <a class="ui item" >
-            <button class="ui white button" @click="showModal('disconnection')" v-if="userToken.length !== 0">
-              Logout
-            </button>
-            <button class="ui white button btn-signup" @click="showModal('connection'); currentTab='signup'" v-if="userToken.length === 0">
-              Sign up
-            </button>
-            <button class="ui white button" @click="showModal('connection'); currentTab='login'" v-if="userToken.length === 0">
-              Login
-            </button>
-          </a>
-        </div>
-      </div>
-      <div class="article-header">
-        <div class="title-article"><h1>{{ title }}</h1></div>
-        <div class="btn-next">
-          <a href="#article"><i class="icon huge angle down"></i></a>
-        </div>
-      </div>
-    </header>
-
-    <main class=" ui container font-comfortia">
-      <div class="ui two column grid" >
-        <section class="ui row stackable mobile vertically reversed grid ">
-          <aside class="ui four wide computer column recommanded-aside" v-if="similars.length !== 0" >
-            <div class="ui segment raised secondary " >
-              <h4 class="ui header recommanded-header">
-                <div class="content font-assitant">
-                  You may like
-                  <div class="sub header"><div class="ui divider"></div></div>
-                </div>
-              </h4>
-              <div>
-                <div class="recommanded-item" v-for="(similar, index) in similars" :key="similar.slug">
-                  <div class=" ui teal" >
-                    <router-link :to="{ name: 'ViewArticle', params: { slug: similar.slug }}">
-                      {{ similar.title }}
-                    </router-link>
-                  </div>
-                  <div class="ui divider" v-if="index !== (similars.length - 1)"></div>
-                </div>
-              </div>
+        <transition name="fade" appear>
+          <div class="article-header">
+            <div class="title-article"><h1>{{ title }}</h1></div>
+            <div class="btn-next">
+              <a href="#article"><i class="icon huge angle down"></i></a>
             </div>
-          </aside>
-          <article class="ui column" :class="{'twelve wide' : similars.length !== 0, 'sixteen wide' : similars.length === 0 }" id="article">
-            <div class="ui segment raised article-section tall stacked">
-              <div class="article-title">
-                <div class="ui feed">
-                  <div class="event">
-                    <div class="label">
-                      <img class="" :src="authorLogo">
+          </div>
+        </transition>
+      </header>
+      <main class=" ui container font-comfortia" v-if="errorMessage.length === 0">
+        <div class="ui two column grid"  >
+          <section class="ui row stackable mobile vertically reversed grid ">
+            <transition name="slide-fade" appear>
+              <aside class="ui four wide computer column recommanded-aside" v-if="similars.length !== 0" >
+                <div class="ui segment raised secondary " >
+                  <h4 class="ui header recommanded-header">
+                    <div class="content font-assitant">
+                      You may like
+                      <div class="sub header"><div class="ui divider"></div></div>
                     </div>
-                    <div class="content">
-                      {{ author }}
-                    </div>
-                  </div>
-                </div>
-                <div class="ui feed">
-                  <div class="event">
-                    <div class="label">
-                      <i class="pencil icon"></i>
-                    </div>
-                    <div class="content">
-                      {{ date }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="article-content">
-                <div v-for="section in content" :key="section.title">
-                  <h3>{{ section.title }}</h3>
-                  <p class="img ui floated left image" v-if="section.img.length !== 0"><img class="ui rounded image" :src="getImage(section.img)" alt="Article illustration"><span>Credit: By Avo</span></p>
-                  <div v-for="(paragraph, index) in section.paragraphs" :key="index">
-                    <p class="img ui floated left image" v-if="paragraph.img.length !== 0"><img class="ui rounded image" :src="getImage(paragraph.img)" alt="Article illustration"><span>Credit: By Avo</span></p>
-                    <p>{{ paragraph.text }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="ui divider"></div>
-              <div class="ui equal width grid">
-                <div class="column tags ui left aligned">
-                  <button class="ui mini basic button" v-for="tag in tags" :key="tag">
-                    <i class="icon tags"></i>
-                    {{ tag }}
-                  </button>
-                </div>
-                <div class=" column likes ui right aligned ">
-                  <div class="ui left mini labeled button"  tabindex="0">
-                    <a class="ui basic mini right pointing label" :class="{purple : liked}">
-                      {{like}}
-                    </a>
-                    <div class="ui mini button " @click="makelike(!liked)" :class="{purple : liked}">
-                      <i class="heart icon"></i> Like
-                    </div>
-                  </div>
-                </div>
-                <div class="ui negative message tiny container message-like-error" v-if="errorLike.length !== 0">
-                  <p>{{errorLike}}</p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div class="ui raised styled fluid accordion pilled">
-                <div v-if="totalComments !== 0">
-                  <div class="title">
-                    <div class="ui equal width middle aligned grid">
-                      <div class="ui column left aligned">
-                        <i class="dropdown icon"></i>
-                        Comments
+                  </h4>
+                  <div>
+                    <div class="recommanded-item" v-for="(similar, index) in similars" :key="similar.slug">
+                      <div class=" ui teal" >
+                        <router-link :to="{ name: 'ViewArticle', params: { slug: similar.slug }}">
+                          {{ similar.title }}
+                        </router-link>
                       </div>
-
-                      <div class="ui right aligned column">
-                        <div class="ui mini left labeled button" tabindex="0">
-                          <a class="ui mini basic label">
-                            {{ totalComments }}
+                      <div class="ui divider" v-if="index !== (similars.length - 1)"></div>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </transition>
+              <article class="ui column" :class="{'twelve wide' : similars.length !== 0, 'sixteen wide' : similars.length === 0 }" id="article">
+                <transition name="slide-fade-up" appear>
+                  <div class="ui segment raised article-section tall stacked">
+                    <div class="article-title">
+                      <div class="ui feed">
+                        <div class="event">
+                          <div class="label">
+                            <img class="" :src="authorLogo">
+                          </div>
+                          <div class="content">
+                            {{ author }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ui feed">
+                        <div class="event">
+                          <div class="label">
+                            <i class="pencil icon"></i>
+                          </div>
+                          <div class="content">
+                            {{ date }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <div v-for="section in content" :key="section.title">
+                        <h3>{{ section.title }}</h3>
+                        <p class="img ui floated left image" v-if="section.img.length !== 0"><img class="ui rounded image" :src="getImage(section.img)" alt="Article illustration"><span>Credit: By Avo</span></p>
+                        <div v-for="(paragraph, index) in section.paragraphs" :key="index">
+                          <p class="img ui floated left image" v-if="paragraph.img.length !== 0"><img class="ui rounded image" :src="getImage(paragraph.img)" alt="Article illustration"><span>Credit: By Avo</span></p>
+                          <p>{{ paragraph.text }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui divider"></div>
+                    <div class="ui equal width grid">
+                      <div class="column tags ui left aligned">
+                        <button class="ui mini basic button" v-for="tag in tags" :key="tag">
+                          <i class="icon tags"></i>
+                          {{ tag }}
+                        </button>
+                      </div>
+                      <div class=" column likes ui right aligned ">
+                        <div class="ui left mini labeled button"  tabindex="0">
+                          <a class="ui basic mini right pointing label" :class="{purple : liked}">
+                            {{like}}
                           </a>
-                          <div class="ui mini icon button">
-                            <i class="comments icon"></i>
+                          <div class="ui mini button " @click="makelike(!liked)" :class="{purple : liked}">
+                            <i class="heart icon"></i> Like
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ui negative message tiny container message-like-error" v-if="errorLike.length !== 0">
+                        <p>{{errorLike}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+
+                <transition name="slide-fade-up" appear >
+                  <div>
+                    <div class="ui raised styled fluid accordion pilled">
+                      <div v-if="totalComments !== 0">
+                        <div class="title">
+                          <div class="ui equal width middle aligned grid">
+                            <div class="ui column left aligned">
+                              <i class="dropdown icon"></i>
+                              Comments
+                            </div>
+
+                            <div class="ui right aligned column">
+                              <div class="ui mini left labeled button" tabindex="0">
+                                <a class="ui mini basic label">
+                                  {{ totalComments }}
+                                </a>
+                                <div class="ui mini icon button">
+                                  <i class="comments icon"></i>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="content ">
+                          <div class="ui container small comments">
+                            <Comment
+                                v-for="comment in comments"
+                                :key="comment"
+                                :id="comment"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="title active ">
+                          <i class="dropdown icon"></i>
+                          Make a comment
+                        </div>
+                        <div class="content active ">
+                          <form class="ui reply form">
+                            <div class="field">
+                              <textarea v-model="message" v-on:focus="commentingMessage = '' "></textarea>
+                            </div>
+                            <div class="ui green labeled submit icon button" @click="makeComment"  :class="{disabled : message.length === 0}">
+                              <i class="icon send" ></i> Comment
+                            </div>
+                          </form>
+                          <div class="ui icon message tiny" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
+                            <p>{{ commentingMessage }}</p>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="content ">
-                    <div class="ui container small comments">
-                      <Comment
-                      v-for="comment in comments"
-                      :key="comment"
-                      :id="comment"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="title active ">
-                  <i class="dropdown icon"></i>
-                  Make a comment
-                </div>
-                <div class="content active ">
-                  <form class="ui reply form">
-                    <div class="field">
-                      <textarea v-model="message" v-on:focus="commentingMessage = '' "></textarea>
-                    </div>
-                    <div class="ui green labeled submit icon button" @click="makeComment"  :class="{disabled : message.length === 0}">
-                      <i class="icon send" ></i> Comment
-                    </div>
-                  </form>
-                  <div class="ui icon message tiny" v-if="commentingMessage.length !== 0" :class="{negative: commentingResult === false, positive: commentingResult === true}">
-                    <p>{{ commentingMessage }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-      </div>
-    </main>
+                </transition>
 
-    <footer class="ui inverted segment center aligned">
-      <span class=" font-pacifico">Made by Amen Alahassa.</span> <span class=" font-comfortia">Web Mobile Developer.</span>
-    </footer>
-
-    <div :class="['ui modal connection']">
-      <keep-alive>
-        <component :is="currentTab" @connect ="displayComponent"></component>
-      </keep-alive>
-    </div>
-
-    <div :class="['ui modal disconnection']">
-      <div class="content">
-        <div class="ui right aligned container actions">
-          <i class="icon close cancel button "  @click="hideModal('disconnection')"></i>
+              </article>
+          </section>
         </div>
-        <div class="ui icon message">
-          <div class=" ui container ">
-            <p>Are you sure to logout ?</p>
+      </main>
+      <div class="ui container raised segment to-center "  v-if="errorMessage.length !== 0">
+        <div class="ui negative icon message center aligned">
+          <i class="frown icon"></i>
+          <div class="content">
+            <div class="header">
+              Errors
+            </div>
+            <p>{{ errorMessage }}</p>
           </div>
-          <div class="ui icon negative message" v-if="errorLogout.length !== 0">
+        </div>
+      </div>
+      <footer class="ui inverted segment center aligned">
+        <span class=" font-pacifico">Made by Amen Alahassa.</span> <span class=" font-comfortia">Web Mobile Developer.</span>
+      </footer>
+
+      <div :class="['ui modal connection']">
+          <keep-alive>
+            <component :is="currentTab" @connect ="displayComponent"></component>
+          </keep-alive>
+      </div>
+
+      <div :class="['ui modal disconnection']">
+        <div class="content">
+          <div class="ui right aligned container actions">
+            <i class="icon close cancel button "  @click="hideModal('disconnection')"></i>
+          </div>
+          <div class="ui icon message">
+            <div class=" ui container ">
+              <p>Are you sure to logout ?</p>
+            </div>
+            <div class=" ui right aligned container ">
+              <button class="ui cancel button red" @click="disconnect" >Continue</button>
+            </div>
+          </div>
+          <div class="ui tiny negative message" v-if="errorLogout.length !== 0">
             <p>{{errorLogout}}</p>
           </div>
-          <div class=" ui right aligned container ">
-            <button class="ui cancel button red" @click="disconnect" >Continue</button>
-          </div>
         </div>
       </div>
-    </div>
 
-  </div>
-  <div class="ui segment on-load" v-if="loadingArticles">
-    <p></p>
-    <div :class="[ 'ui dimmer', {active : loadingArticles}]">
-      <div class="ui text loader">Loading</div>
+    </div>
+    <div class="ui segment on-load" v-if="loadingArticles">
+      <p></p>
+      <div :class="[ 'ui dimmer', {active : loadingArticles}]">
+        <div class="ui text loader">Loading</div>
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
+
+
 import {useStore} from "vuex";
 import {ref, onMounted, onUpdated} from "vue";
 import logo from "@/assets/avô2.png";
@@ -217,6 +243,7 @@ import { commentMixin } from "@/module/mixins";
 import store from "@/datas/store";
 
 export default {
+
   name: "ViewArticle",
   props : [ 'slug' ],
   mixins: [ commentMixin ],
@@ -237,16 +264,10 @@ export default {
 
     const store = useStore()
     const loadingArticles = ref(true)
+
     store.dispatch('getArticle', props.slug).then(() => {
       loadingArticles.value = false
     })
-
-    // onBeforeRouteUpdate(() => {
-    //   const loadingArticles = ref(true)
-    //   store.dispatch('getArticle', props.slug).then(() => {
-    //     loadingArticles.value = false
-    //   })
-    // })
 
     onMounted(() => {
       let user = getUserFromLocal()
@@ -260,8 +281,12 @@ export default {
       initAccordion()
     })
 
+    let errorMessage = computed(() => store.getters.getLoadingError)
+
+
     return {
       loadingArticles,
+      errorMessage,
       image: computed(() => store.getters.getBackgroundImage),
       title: computed(() => store.getters.getTitle),
       author: computed(() => store.getters.getAuthor),
@@ -560,6 +585,68 @@ footer
 
 .message-like-error {
   margin: 0 10px 10px 10px !important;
+}
+
+.to-center {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.7s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.slide-fade-up-enter-active {
+  transition: all 0.7s ease-out;
+}
+
+.slide-fade-up-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-up-enter-from,
+.slide-fade-up-leave-to {
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+@media only screen and (max-width: 767px) {
+  .slide-fade-enter-active {
+    transition: all 0.7s ease-out;
+  }
+
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
 }
 
 </style>

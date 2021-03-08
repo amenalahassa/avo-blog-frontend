@@ -1,73 +1,81 @@
 <template>
-  <div v-if="!loadingArticles">
-    <header >
-      <div class="content-header">
-        <img class="ui large image logo" :src="logo" alt="Logo de Avo">
-        <div>
-          <p>Le blog du pagne africain.</p>
-        </div>
-      </div>
-    </header>
-
-    <main class="">
-      <div class="ui container raised segment search-container" v-show="errorMessage.length === 0 && displayedArticles.length !== 0">
-        <div class="ui icon input">
-          <input type="text" placeholder="Search by article title..." v-model.trim="searched" v-on:keyup="onSearch">
-          <i class="search link icon"></i>
-        </div>
-      </div>
-      <div class="ui container raised segment" v-if="searching && errorMessage.length === 0">
-        <Article
-            v-for="(item, index) in findArticles(searched)"
-            :item="item"
-            :index="index"
-            :key="item._id"
-        >
-          <div class="ui divider" v-if="index !== (findArticles(searched).length - 1)"></div>
-        </Article>
-        <div class="ui negative icon message" v-if="findArticles(searched).length === 0" >
-          <i class="frown icon"></i>
-          <div class="content">
-            <div class="header">
-              Not found
+    <div v-if="!loadingArticles">
+      <header >
+        <transition name="fade" appear>
+        <div class="content-header">
+          <img class="ui large image logo" :src="logo" alt="Logo de Avo">
+            <div>
+              <p>Le blog du pagne africain.</p>
             </div>
-            <p>We're sorry. No match with this article title</p>
-          </div>
         </div>
-      </div>
-      <div class="ui container raised segment" v-if="!searching && errorMessage.length === 0">
-        <Article
-            v-for="(item, index) in displayedArticles"
-            :item="item"
-            :index="index"
-            :key="item._id"
-        >
-          <div class="ui divider" v-if="index !== (displayedArticles.length - 1)"></div>
-        </Article>
-        <div class="ui info message" v-if="displayedArticles.length === 0" >
-          <div class="header">
-            Sorry...
-          </div>
-          <p>No article is yet published. Come back a bit later.</p>
-        </div>
-      </div>
-      <div class="ui container raised segment" v-if="errorMessage.length !== 0">
-        <div class="ui negative icon message">
-          <i class="frown icon"></i>
-          <div class="content">
-            <div class="header">
-              Errors
-            </div>
-            <p>{{ errorMessage }}</p>
-          </div>
-        </div>
-      </div>
-    </main>
+        </transition>
+      </header>
 
-    <footer class="ui inverted segment center aligned">
-      <span class=" font-pacifico">Made by Amen Alahassa.</span> <span class=" font-comfortia">Web Mobile Developer.</span>
-    </footer>
-  </div>
+
+      <main class="">
+        <div class="ui container raised segment search-container" v-show="errorMessage.length === 0 && displayedArticles.length !== 0">
+          <div class="ui icon input">
+            <input type="text" placeholder="Search by article title..." v-model.trim="searched" v-on:keyup="onSearch">
+            <i class="search link icon"></i>
+          </div>
+        </div>
+        <div class="ui container raised segment" v-if="searching && errorMessage.length === 0">
+          <transition-group name="flip-list" tag="p" >
+            <Article
+                v-for="(item, index) in findArticles(searched)"
+                :item="item"
+                :index="index"
+                :key="item._id"
+            >
+              <div class="ui divider" v-if="index !== (findArticles(searched).length - 1)"></div>
+            </Article>
+          </transition-group>
+
+          <div class="ui negative icon message" v-if="findArticles(searched).length === 0" >
+            <i class="frown icon"></i>
+            <div class="content">
+              <div class="header">
+                Not found
+              </div>
+              <p>We're sorry. No match with this article title</p>
+            </div>
+          </div>
+        </div>
+        <div class="ui container raised segment" v-if="!searching && errorMessage.length === 0">
+          <transition-group name="list" tag="p" appear>
+            <Article
+                v-for="(item, index) in displayedArticles"
+                :item="item"
+                :index="index"
+                :key="item._id"
+            >
+              <div class="ui divider" v-if="index !== (displayedArticles.length - 1)"></div>
+            </Article>
+          </transition-group>
+          <div class="ui info message" v-if="displayedArticles.length === 0" >
+            <div class="header">
+              Sorry...
+            </div>
+            <p>No article is yet published. Come back a bit later.</p>
+          </div>
+        </div>
+        <div class="ui container raised segment" v-if="errorMessage.length !== 0">
+          <div class="ui negative icon message">
+            <i class="frown icon"></i>
+            <div class="content">
+              <div class="header">
+                Errors
+              </div>
+              <p>{{ errorMessage }}</p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="ui inverted segment center aligned">
+        <span class=" font-pacifico">Made by Amen Alahassa.</span> <span class=" font-comfortia">Web Mobile Developer.</span>
+      </footer>
+    </div>
   <div class="ui segment on-load" v-if="loadingArticles">
     <p></p>
     <div :class="[ 'ui dimmer', {active : loadingArticles}]">
@@ -111,6 +119,8 @@ export default {
       loadingArticles.value = false
     })
 
+
+
     return {
       displayedArticles,
       findArticles,
@@ -125,7 +135,8 @@ export default {
     onSearch(){
       this.searching = this.searched.length !== 0;
     }
-  }
+  },
+
 }
 
 </script>
@@ -215,4 +226,30 @@ footer
 .search-container div {
   width: 100%;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.flip-list-move {
+  transition: transform 0.2s ease;
+}
+
 </style>

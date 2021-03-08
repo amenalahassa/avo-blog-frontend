@@ -6,7 +6,8 @@ export default {
     namespace: true,
     state: () => ({
         content : null,
-        about: null
+        about: null,
+        error:""
     }),
     actions,
     getters,

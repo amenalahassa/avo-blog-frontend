@@ -18,8 +18,8 @@ export default {
                     commit('SET_ERROR', "Something goes wrong on server side. Please try again later.")
                 }
             })
-            .catch(() => {
-                commit('SET_ERROR', "Something goes wrong. Please try again.")
+            .catch((err) => {
+                commit('SET_ERROR', "Something goes wrong. Please try again.  Details :" + err )
             })
     }
 }

@@ -167,3 +167,4 @@ export function getUserFromLocal() {
 export function saveUserInLocal(user) {
     localStorage.setItem('user', JSON.stringify(user));
 }
+
