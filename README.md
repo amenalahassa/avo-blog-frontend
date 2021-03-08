@@ -1,4 +1,11 @@
+
 # avo
+
+Avô est une store de pagnes que l'on peut commander et faire coudre en meme 
+temps en ligne.
+
+Ce referentiel contient juste la partie frontend du blog du site Avô que j'ai concu
+avec principalement VueJs et SemanticUi.
 
 ## Project setup
 ```
