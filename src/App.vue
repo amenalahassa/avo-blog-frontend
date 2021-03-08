@@ -24,9 +24,9 @@ body, html, header
 
 body
 {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-image: linear-gradient(45deg, #e37682 15%, #5f4d93 85%);
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-image: linear-gradient(45deg, #e37682 15%, #5f4d93 85%) !important;
 }
 
 </style>

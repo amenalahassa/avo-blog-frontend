@@ -2,12 +2,12 @@
     <div v-if="!loadingArticles">
       <header >
         <transition name="fade" appear>
-        <div class="content-header">
-          <img class="ui large image logo" :src="logo" alt="Logo de Avo">
-            <div>
-              <p>Le blog du pagne africain.</p>
-            </div>
-        </div>
+          <div class="content-header">
+            <img class="ui large image logo" :src="logo" alt="Logo de Avo">
+              <div>
+                <p>Le blog du pagne africain.</p>
+              </div>
+          </div>
         </transition>
       </header>
 
@@ -252,4 +252,18 @@ footer
   transition: transform 0.2s ease;
 }
 
+@media only screen and (max-width: 767px) {
+  .content-header {
+    width: 300px;
+  }
+
+}
+
+
+@media only screen and (max-width: 567px) {
+  .content-header {
+    width: 250px;
+  }
+
+}
 </style>

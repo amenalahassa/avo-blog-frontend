@@ -18,9 +18,6 @@ export default {
       let baseURL = "http://" + process.env.VUE_APP_SERVER_HOST
       return baseURL + link
     },
-  },
-  mounted() {
-    console.log(this.$props.section)
   }
 }
 </script>

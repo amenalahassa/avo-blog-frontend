@@ -168,3 +168,10 @@ export function saveUserInLocal(user) {
     localStorage.setItem('user', JSON.stringify(user));
 }
 
+export function initSidebar()
+{
+    return $('.sidebar')
+        .sidebar('setting', 'transition', 'overlay')
+        .sidebar('attach events', '.btn-sidebar-show', 'show')
+        .sidebar('attach events', '.btn-sidebar-hide', 'hide');
+}
