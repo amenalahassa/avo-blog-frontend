@@ -83,14 +83,11 @@
                       </div>
                     </div>
                     <div class="article-content">
-                      <div v-for="section in content" :key="section.title">
-                        <h3>{{ section.title }}</h3>
-                        <p class="img ui floated left image" v-if="section.img.length !== 0"><img class="ui rounded image" :src="getImage(section.img)" alt="Article illustration"><span>Credit: By Avo</span></p>
-                        <div v-for="(paragraph, index) in section.paragraphs" :key="index">
-                          <p class="img ui floated left image" v-if="paragraph.img.length !== 0"><img class="ui rounded image" :src="getImage(paragraph.img)" alt="Article illustration"><span>Credit: By Avo</span></p>
-                          <p>{{ paragraph.text }}</p>
-                        </div>
-                      </div>
+                     <Section
+                         v-for="section in content"
+                         :key="section.title"
+                         :section="section"
+                     />
                     </div>
                     <div class="ui divider"></div>
                     <div class="ui equal width grid">
@@ -239,6 +236,7 @@ import {getUserFromLocal, initAccordion, showModal, hideModal} from "@/module/bi
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
 import Comment from "@/components/Comment";
+import Section from "@/components/Section";
 import { commentMixin } from "@/module/mixins";
 import store from "@/datas/store";
 
@@ -250,7 +248,8 @@ export default {
   components: {
     Login,
     Signup,
-    Comment
+    Comment,
+    Section
   },
   data() {
     return {
@@ -314,10 +313,6 @@ export default {
     }
   },
   methods: {
-    getImage(link){
-      let baseURL = "http://" + process.env.VUE_APP_SERVER_HOST
-      return baseURL + link
-    },
     sendComment() {
       store.dispatch('makeComment', this.message).then((response) => {
         let status = response.data.status

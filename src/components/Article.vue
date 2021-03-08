@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="root">
     <div class=" ui two column stackable mobile vertically reversed grid article-item ">
       <div class="ui column article-img" v-if="(index % 2) === 0">
         <p><img class="ui large rounded   image" :src="url + item.img " alt="Article illustration"></p>
@@ -63,5 +63,17 @@ export default {
 </script>
 
 <style scoped>
+
+.root {
+  padding: 20px !important;
+}
+
+.article-desc {
+  margin-bottom: 10px !important;
+}
+
+h3.ui.header {
+  margin: 0 !important;
+}
 
 </style>
