@@ -30,7 +30,7 @@
   </div>
   <div class=" dimmed pusher"  >
     <div v-if="!loadingArticles">
-      <header :style="{backgroundImage: `url('${image}')`}">
+      <header v-if="errorMessage.length === 0" :style="{backgroundImage: `url('${image}')`}">
         <div class=" tabs ui secondary menu tabs-hide ">
           <div class="item">
             <router-link :to="{ name: 'Home'}" class="logo-link"><img class="logo" :src="logo" alt="Logo de Avo"></router-link>
@@ -210,7 +210,7 @@
           </section>
         </div>
       </main>
-      <div class="ui container raised segment to-center "  v-if="errorMessage.length !== 0">
+      <div class="ui container raised segment to-center on-load "  v-if="errorMessage.length !== 0">
         <div class="ui negative icon message center aligned">
           <i class="frown icon"></i>
           <div class="content">
@@ -317,12 +317,11 @@ export default {
       initSidebar()
     })
 
-    let errorMessage = computed(() => store.getters.getLoadingError)
 
 
     return {
       loadingArticles,
-      errorMessage,
+      errorMessage : computed(() => store.getters.getLoadingError),
       image: computed(() => store.getters.getBackgroundImage),
       title: computed(() => store.getters.getTitle),
       author: computed(() => store.getters.getAuthor),

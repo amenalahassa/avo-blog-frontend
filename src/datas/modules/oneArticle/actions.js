@@ -16,7 +16,7 @@ export default {
                     commit('SET_ABOUT', response.data.data.article)
                 }
                 else {
-                    commit('SET_ERROR', "Something goes wrong on server side. Please try again later.")
+                    commit('SET_ERROR', "Something goes wrong. Details: " + response.data.status.message)
                 }
             })
             .catch((err) => {

@@ -2,8 +2,8 @@ import { createApp} from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHistory} from "vue-router";
 import Home from "@/views/ViewHome";
-import ViewArticle from "@/views/ViewArticle";
-import PageNotFound from "@/views/ViewNotFound";
+import Article from "@/views/ViewArticle";
+import NotFound from "@/views/ViewNotFound";
 import store from "@/datas/store";
 
 const app = createApp(App).use(store)
@@ -19,11 +19,11 @@ const router = createRouter({
         {
             path: '/article/:slug',
             name: "ViewArticle",
-            component: ViewArticle,
+            component: Article,
             props: true
         },
         // Todo create not found view
-        { path: '/:pathMatch(.*)*', name: 'not-found', component: PageNotFound },
+        { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
     ]
 })
 
